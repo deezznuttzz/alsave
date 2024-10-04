@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id           Int    @id @default(autoincrement())
+  name         String @default("Unknown") // Default value for existing rows
+  email        String @unique
+  password     String
+  refreshToken String? @db.Text // Allow large refresh tokens
+    role         String @default("user") // Default role is 'user'
+ subscription  Json?            // Store the subscription as JSON
+  favfoods     FavFood[]
+  favgroceries FavGroceries[]
+  favfoodplace FavFoodPlace[]
+  favgrocer    FavGrocer[]
+}
+
+
+model FavFood {
+  id      Int    @id @default(autoincrement())
+  type    String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+  place   String?
+}
+
+model FavGroceries {
+  id      Int    @id @default(autoincrement())
+  type    String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+  place   String?
+}
+
+model FavFoodPlace {
+  id      Int    @id @default(autoincrement())
+  place   String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+}
+
+model FavGrocer {
+  id      Int    @id @default(autoincrement())
+  place   String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+}
+
+enum Userroles {
+  User
+  Owner
+}
+
+model Places {
+  id        Int       @id @default(autoincrement())
+  name      String
+  location  String
+  type      String
+  imagepath String
+  special   Special[]
+}
+
+model Special {
+  id        Int        @id @default(autoincrement())
+  name      String
+  type      String
+  foodorgroc FoodOrGroc
+  imagepath String
+  from      String
+  till      String
+  before    Float
+  after     Float
+  placesId  Int        // Declare the placesId field here
+  places    Places     @relation(fields: [placesId], references: [id])
+}
+
+enum FoodOrGroc {
+  Food
+  Groc
+  Both
+}

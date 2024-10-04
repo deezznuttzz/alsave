@@ -1,0 +1,7 @@
+POST http://localhost:3000/api/send-notification
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "message": "Hello, you have a new notification!"
+}
